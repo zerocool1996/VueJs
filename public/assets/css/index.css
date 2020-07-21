@@ -1,0 +1,148 @@
+*{
+    padding: 0px;
+    margin: 0px;
+}
+.main{
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 5px;
+    background-color:rgb(47, 47, 47);
+}
+.main .intro{
+    color: #DAAD3B;
+    padding: 10px 10px;
+    margin-left: 5px;
+    text-transform: uppercase;
+    border: 1px solid #1B1B1B;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: bold;
+    width: 150px;
+    float: left;
+}
+.main .intro2{
+    width: 200px !important;
+    color: #DAAD3B;
+    padding: 10px 10px;
+    margin:40px 0px  5px  0px;
+    text-transform: uppercase;
+    border: 1px solid #1B1B1B;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: bold;
+    width: 150px;
+    float: left;
+}
+.main .card{
+    padding: 0px 2px !important;
+    background-color:rgb(47, 47, 47) !important;
+    border: none !important;
+}
+
+.main .card .card-title{
+    margin-bottom: 4px;
+    color: rgb(28, 167, 209);
+}
+.new-product a{
+    margin: 2px;
+    border: 1px solid rgb(117, 85, 85);
+    border-radius: 2px ;
+}
+.main .card .card-body{
+    padding: 7px 5px !important;
+    background-color:rgb(92, 92, 92);
+    color: white;
+}
+.main .card .card-body .card-title{
+    text-transform: uppercase;
+}
+.main .card .card-body .card-title:hover{
+    color: black;
+}
+.dropdown-menu{
+    opacity: 0.8;
+    padding: 0px;
+    background-color: darkgray !important;
+    margin-top: 7px !important;
+}
+.dropdown-menu ul li{
+    list-style: none;
+    float: none;
+    width: 150px;
+    display: inline-block;
+    width: 160px !important;
+}
+.dropdown-menu ul{
+    width: 800px;
+}
+a:hover{
+    text-decoration: none !important;
+}
+#search{
+    margin: auto;
+    border-radius: 20px;
+    padding-left: 10px;
+    border: solid 1px whitesmoke;
+    width: 325px;
+    height: 30px;
+    margin-left: 200px;
+    color: rgb(36, 30, 30);
+}
+.hot-product a:hover h5{
+    color: aqua;
+}
+.main .product-detail h2{
+    color: wheat;
+}
+.main .product-detail .content,h5{
+    color: whitesmoke;
+}
+.box_img{
+    display: block;
+}
+
+.show-list{
+    background: #fff;
+    min-width: 150px;
+    padding: 15px;
+    box-shadow: 0px 0px 3px 0px #aeaeae;
+    color: #696969;
+    list-style: none;
+}
+.box-btn-mb{
+    margin-top: 10px;
+}
+.manage-account{
+    display: inline-block;
+    width: auto;
+}
+.manage-account h5:hover{
+    color:red;
+    transition: 0.5s;
+}
+#user-option{
+    display: none;
+    position: absolute;
+    top: 35px;
+    right: 10px;
+}
+.box-btn-mb:hover #user-option{
+    transition: 1s;
+    display: block;
+}
+.name-acc{
+    font-size: 14px;
+    font-weight: 400;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    color: #fff;
+    display: block;
+    cursor: pointer;
+    font-weight: bold;
+}
+#carouselExampleIndicators{
+    margin: 100px 0px;
+}
+.manage-account .dropdown-toggle::after{
+    display: none !important;
+}
