@@ -42,7 +42,7 @@ router.beforeEach((to, from, next) => {
 })
 
 window.axios = require('axios')
-window.axios.defaults.baseURL = 'http://localhost/day2006/public'
+window.axios.defaults.baseURL = 'http://commic.com/'
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 window.axios.defaults.headers.common['Accept'] = 'application/json'
 window.axios.interceptors.request.use(config => {

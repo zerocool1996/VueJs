@@ -86,7 +86,7 @@ export default {
 
     methods : {
         fetchCategories() {
-            this.$http.get('http://localhost/day2006/public/api/all/category')
+            this.$http.get('/api/all/category')
             .then(res => {
                 this.categories = res.data.categories
             })
@@ -94,7 +94,7 @@ export default {
         },
 
         fetchAuthors () {
-            this.$http.get('http://localhost/day2006/public/api/all/author')
+            this.$http.get('/api/all/author')
             .then(res => {
                 this.authors = res.data.authors
             })

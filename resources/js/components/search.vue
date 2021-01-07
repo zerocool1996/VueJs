@@ -39,7 +39,7 @@ export default {
         fetchProducts(page_url) {
             let vm = this;
             this.keyword = this.$route.params.keyword
-            page_url = page_url || `http://localhost/day2006/public/api/search/${this.keyword}`;
+            page_url = page_url || `/api/search/${this.keyword}`;
             this.$http.get(page_url).then(res => {
                 this.products = res.data.products.data
                 this.per_page = res.data.products.per_page

@@ -37,7 +37,7 @@ export default {
     methods: {
         fetchProducts(page_url) {
             let vm = this;
-            page_url = page_url || 'http://localhost/day2006/public/api/index';
+            page_url = page_url || '/api/index';
             this.$http.get(page_url).then(res => {
                 this.products = res.data.products.data
                 this.per_page = res.data.products.per_page
