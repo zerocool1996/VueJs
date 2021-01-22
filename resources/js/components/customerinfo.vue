@@ -49,7 +49,7 @@
                 {{ successMessage }}
             </div>
             <div class="clearfix mt-3">
-                <span type="submit" class="btn btn-success" @click.prevent="update">Cập nhật</span>
+                <span v-if="user" type="submit" class="btn btn-success" @click.prevent="update">Cập nhật</span>
                 <span type="button" class="btn button-blue" @click.prevent="back">Quay lại</span>
             </div>
         </div>
@@ -59,35 +59,46 @@
 export default {
     data() {
         return {
-            user: {
-                email       : null,
-                first_name  : null,
-                last_name   : null,
-                address     : null,
-                tel         : null,
-                gender_id   : null,
-                img         : null
-            },
+            // user: {
+            //     email       : null,
+            //     first_name  : null,
+            //     last_name   : null,
+            //     address     : null,
+            //     tel         : null,
+            //     gender_id   : null,
+            //     img         : null
+            // },
             successMessage  : null,
             errors          : {},
-            id              : null,
-            img :null
+            // id              : null,
+            // img :null
+        }
+    },
+    computed : {
+        user() {
+            return this.$store.state.user.user
+        },
+        img() {
+            return this.$store.state.user.user.img
+        },
+        id() {
+            return this.$store.state.user.user.id
         }
     },
     created () {
         this.$eventBus.$on('logout', this.logout)
-        let data = JSON.parse(window.localStorage.getItem('user'))
-        this.id  = data.id
-        this.user = {
-            email       : data.email,
-            first_name  : data.first_name,
-            last_name   : data.last_name,
-            address     : data.last_name,
-            tel         : data.tel,
-            gender_id   : data.gender_id,
-            //img         : data.img
-        }
-        this.img = data.img
+        // let data = this.$store.state.user.user
+        // this.id  = data.id
+        // this.user = {
+        //     email       : data.email,
+        //     first_name  : data.first_name,
+        //     last_name   : data.last_name,
+        //     address     : data.last_name,
+        //     tel         : data.tel,
+        //     gender_id   : data.gender_id,
+        //     //img         : data.img
+        // }
+        // this.img = data.img
     },
     methods : {
         back () {

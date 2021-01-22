@@ -10,7 +10,7 @@ window.Vue = require('vue');
 
 import VueRouter from 'vue-router';
 import { routes }  from './router.js';
-
+import store from './store';
 Vue.use(VueRouter);
 
 import izitoast from 'izitoast';
@@ -18,7 +18,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 window.izitoast = izitoast
 
 const router = new VueRouter({
-    mode: 'hash',
+    mode: 'history',
     routes
 })
 
@@ -63,5 +63,6 @@ Vue.component('master', require('./components/admin/layout/master.vue').default)
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    store,
 });

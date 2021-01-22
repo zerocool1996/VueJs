@@ -41,7 +41,7 @@
             <a v-if="!token" href="javascript:void(0);" id="login" data-toggle="modal" data-target="#loginModal">Đăng nhập</a>
             <div  v-if="token" class="dropdown user-info">
                 <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Hi <span v-if="user.first_name">{{ user.first_name }}</span>  !
+                    Hi <span v-if="user">{{ user.first_name }}</span>  !
                 </button>
                 <div class="dropdown-menu bg-light" aria-labelledby="dropdownMenu2">
                     <button class="dropdown-item" type="button" @click="customerInfo">Sửa thông tin cá nhân</button>
@@ -62,9 +62,7 @@ export default {
         return {
             authors : [],
             categories : [],
-            token: window.localStorage.getItem('access_token') ?? null,
             cart: [],
-            user : JSON.parse(window.localStorage.getItem('user')) ?? '',
             keyword : null
 
         }
@@ -72,6 +70,12 @@ export default {
     computed: {
         quantityProduct() {
             return this.cart.length
+        },
+        user() {
+            return this.$store.state.user.user ?? null
+        },
+        token() {
+            return this.$store.state.user.access_token ?? null
         }
     },
     created () {
@@ -80,7 +84,6 @@ export default {
         this.initCart()
         this.$eventBus.$on('addToCart', this.addToCart) // lắng nghe event bus
         this.$eventBus.$on('resetCart', this.resetCart)
-        this.$eventBus.$on('login', this.getUser)
         this.$eventBus.$on('userUpdated', this.getUser)
     },
 
@@ -124,11 +127,7 @@ export default {
 
         },
         logout() {
-            this.$http.post('/api/auth/logout').then(res => {
-                window.localStorage.removeItem('access_token')
-                window.localStorage.removeItem('user')
-                this.token = null
-            })
+            this.$store.dispatch('user/logout')
             window.sessionStorage.removeItem('cart')
             this.cart = []
             this.$eventBus.$emit('logout')
@@ -160,11 +159,6 @@ export default {
         toCart(){
             this.$router.replace({name: 'cart'})
             //this.$eventBus.$on('refresh')
-        },
-        getUser(){
-            setTimeout(()=>{
-                this.user = JSON.parse(window.localStorage.getItem('user')) ?? null
-            }, 4000);
         },
         search(){
             if(this.keyword != null && this.keyword.length > 0){

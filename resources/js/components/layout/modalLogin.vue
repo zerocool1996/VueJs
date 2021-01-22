@@ -5,7 +5,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="loginModalLabel">Đăng nhập</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btn-close-form-login">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -54,20 +54,23 @@ export default {
     },
     methods : {
         login() {
-            this.$http.post('/api/auth/login', this.user).then(res => {
-                window.localStorage.setItem('access_token', res.data.access_token)
-                this.getUserLogin()
-                this.$emit('loginSuccess', res.data.access_token)
-                document.getElementById('login').click()
+            // this.$http.post('/api/auth/login', this.user).then(res => {
+            //     window.localStorage.setItem('access_token', res.data.access_token)
+            //     this.getUserLogin()
+            //     this.$emit('loginSuccess', res.data.access_token)
+            //     document.getElementById('login').click()
+            // }).catch(err => {
+            //     if (err.response.status === 422) {
+            //         this.errors = err.response.data.errors
+            //     }
+            // })
+            this.$store.dispatch('user/loginByEmail', this.user).then(res => {
+                document.getElementById('btn-close-form-login').click()
             }).catch(err => {
+                console.log(err)
                 if (err.response.status === 422) {
                     this.errors = err.response.data.errors
                 }
-            })
-        },
-        getUserLogin() {
-            this.$http.post('/api/auth/me').then(res => {
-                window.localStorage.setItem('user', JSON.stringify(res.data))
             })
         },
     }
