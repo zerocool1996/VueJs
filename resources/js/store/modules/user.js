@@ -41,6 +41,18 @@ const user = {
             window.axios.get('/api/auth/logout').then(response => {
                 commit('LOG_OUT')
             })
+        },
+        updateUser({commit, dispatch}, {id, data}) {
+            return new Promise((resolve, reject) => {
+                window.axios.post(`/api/auth/update/${id}`, data)
+                    .then(res =>{
+                        dispatch('getUser')
+                        resolve(res)
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
+            })
         }
     }
 }

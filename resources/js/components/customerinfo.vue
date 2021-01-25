@@ -44,12 +44,8 @@
             </div>
             <img v-if="img" :src="img" class="img-responsive"   width="350" >
 
-
-            <div v-if="successMessage" class=" alert alert-success">
-                {{ successMessage }}
-            </div>
             <div class="clearfix mt-3">
-                <span v-if="user" type="submit" class="btn btn-success" @click.prevent="update">Cập nhật</span>
+                <span type="submit" class="btn btn-success" @click.prevent="update">Cập nhật</span>
                 <span type="button" class="btn button-blue" @click.prevent="back">Quay lại</span>
             </div>
         </div>
@@ -59,46 +55,35 @@
 export default {
     data() {
         return {
-            // user: {
-            //     email       : null,
-            //     first_name  : null,
-            //     last_name   : null,
-            //     address     : null,
-            //     tel         : null,
-            //     gender_id   : null,
-            //     img         : null
-            // },
-            successMessage  : null,
+            user: {
+                email       : null,
+                first_name  : null,
+                last_name   : null,
+                address     : null,
+                tel         : null,
+                gender_id   : null,
+                img         : null
+            },
             errors          : {},
-            // id              : null,
-            // img :null
-        }
-    },
-    computed : {
-        user() {
-            return this.$store.state.user.user
-        },
-        img() {
-            return this.$store.state.user.user.img
-        },
-        id() {
-            return this.$store.state.user.user.id
+            id              : null,
+            img :null
         }
     },
     created () {
         this.$eventBus.$on('logout', this.logout)
-        // let data = this.$store.state.user.user
-        // this.id  = data.id
-        // this.user = {
-        //     email       : data.email,
-        //     first_name  : data.first_name,
-        //     last_name   : data.last_name,
-        //     address     : data.last_name,
-        //     tel         : data.tel,
-        //     gender_id   : data.gender_id,
-        //     //img         : data.img
-        // }
-        // this.img = data.img
+        // let data = JSON.parse(window.localStorage.getItem('user'))
+        let data = this.$store.state.user.user
+        this.id  = data.id
+        this.user = {
+            email       : data.email,
+            first_name  : data.first_name,
+            last_name   : data.last_name,
+            address     : data.last_name,
+            tel         : data.tel,
+            gender_id   : data.gender_id,
+            //img         : data.img
+        }
+        this.img = data.img
     },
     methods : {
         back () {
@@ -114,15 +99,31 @@ export default {
             }
         },
         update() {
-            this.$http.post(`/api/auth/update/${this.id}`, this.user)
-            .then(res =>{
-                this.successMessage = res.data.message
-                this.$http.post('/api/auth/me').then(res => {
-                    window.localStorage.setItem('user', JSON.stringify(res.data))
-                })
-                this.$eventBus.$emit('userUpdated')
-            })
-            .catch(err => {
+            let user_id = this.id, user_data = this.user
+            console.log(user_id)
+            this.$store.dispatch('user/updateUser', {id: user_id, data: user_data}).then(res => {
+                if (res.data.success == 'true') {
+                    window.izitoast.success({
+                        title : "Success",
+                        message : res.data.message
+                    })
+                    this.user = {
+                        email       : res.data.user.email,
+                        first_name  : res.data.user.first_name,
+                        last_name   : res.data.user.last_name,
+                        address     : res.data.user.last_name,
+                        tel         : res.data.user.tel,
+                        gender_id   : res.data.user.gender_id,
+                    }
+                    this.errors = null
+                } else {
+                    window.izitoast.success({
+                        title: "Error",
+                        message: res.data.message
+                    });
+                    this.errors = null
+                }
+            }).catch(err => {
                 this.errors = err.response.data.errors;
             })
         },

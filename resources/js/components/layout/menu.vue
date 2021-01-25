@@ -84,7 +84,7 @@ export default {
         this.initCart()
         this.$eventBus.$on('addToCart', this.addToCart) // lắng nghe event bus
         this.$eventBus.$on('resetCart', this.resetCart)
-        this.$eventBus.$on('userUpdated', this.getUser)
+        // this.$eventBus.$on('userUpdated', this.getUser) user đã chuyển sang get từ vuex nên ko cần nữa
     },
 
     methods : {

@@ -85,6 +85,7 @@ class AuthController extends Controller
             DB::commit();
             return response()->json([
                 'user' => $user,
+                'success' => 'true',
                 'message' => 'Cập nhật thông tin thành công !'
             ]);
         } catch (Exception $e) {
@@ -92,6 +93,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'user' => $user,
+            'success' => 'false',
             'message' => 'Cập nhật thông tin ko thành công !'
         ]);
     }

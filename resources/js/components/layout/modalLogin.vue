@@ -54,6 +54,8 @@ export default {
     },
     methods : {
         login() {
+
+            // code cũ, ko dùng nữa khi chyuển sang dùng login logout kết hợp vuex
             // this.$http.post('/api/auth/login', this.user).then(res => {
             //     window.localStorage.setItem('access_token', res.data.access_token)
             //     this.getUserLogin()
@@ -64,6 +66,8 @@ export default {
             //         this.errors = err.response.data.errors
             //     }
             // })
+
+            //code mới, kết hợp vuex
             this.$store.dispatch('user/loginByEmail', this.user).then(res => {
                 document.getElementById('btn-close-form-login').click()
             }).catch(err => {
