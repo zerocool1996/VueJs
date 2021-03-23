@@ -17,6 +17,7 @@
     </div>
 </template>
 <script>
+import { mapMutations } from 'vuex'
 export default {
     data () {
         return {
@@ -31,7 +32,6 @@ export default {
                 categories: [],
             },
             cart: [],
-            token : null,
         }
     },
     created () {
@@ -41,8 +41,14 @@ export default {
         this.$eventBus.$on('logout', this.logout)
     },
     methods : {
+        ...mapMutations([
+            'cart/ADD_TO_CART',
+        ]),
+        ...mapMutations({
+            add_to_cart: 'cart/ADD_TO_CART', // map `this.add()` to `this.$store.commit('increment')`
+        }),
+
         fetchData() {
-            this.token = window.localStorage.getItem('access_token') ?? null
             let id = this.$route.params.id
             this.$http.get(`/api/product/detail/${id}`)
             .then(res => {
@@ -60,76 +66,41 @@ export default {
             .catch(res => console.log(res))
         },
         addToCart(id) {
-            if(this.token){
-                this.$http.get(`/api/cart/add-product/${id}`)
-                .then(res => {
-                    // lấy sản phẩm thêm vào giỏ hàng
-                    const cart = {
-                        id: id, // id sản phẩm
-                        quantity: 1, // số lượng mặc định 1
-                        name : this.product.name,
-                        img  : this.product.img,
-                        price: this.product.price,
-                    }
-                    let index = -1 // biến để xem thêm số lượng sản phẩm hay thêm sản phẩm mới
-                    this.cart = window.sessionStorage.getItem('cart') ? Object.values(JSON.parse(window.sessionStorage.getItem('cart'))) : this.cart // lấy giỏ hàng từ local session, nếu có giỏ hàng rồi thì chuyển nó về mảng array - JSON.parse chuyển về dạng object JSON - Object.values chuyển về dạng mảng, nếu không có giỏ hàng thì set bằng rỗng
-                    for (let i=0; i<this.cart.length; i++) { // vòng lặp kiểm tra giỏ hàng
-                        if (this.cart[i].id === id ) { // nếu sản phẩm thêm đã tồn tại trong giỏ hàng
-                            index = i // đặt index = vị trí của sản phẩm trong giỏ hàng
-                            break // thoát khỏi vòng lặp
-                        }
-                    }
-                    if (index === -1) { // nếu biến index giữ nguyên
-                        this.cart.push(cart) // thêm mới sản phẩm vào giỏ hàng
-                    } else { // nếu biến index đã bị gán thành vị trí sản phẩm trogn giỏ hàng
-                        this.cart[index].quantity += 1 // tăng số lượng sản phẩm trong giỏ hàng lên 1
-                    }
-                    this.$eventBus.$emit('addToCart', this.cart) // truyền event để thông báo thêm sản phẩm vào giỏ hàn
-                    window.sessionStorage.setItem('cart', JSON.stringify(this.cart)) // lưu giỏ hàng vào local session, JSON.stringify - chuyển dữ liệu về dạng tring JSON
+            if(this.$store.state.user.access_token){
+                const cart = {
+                    id: id, // id sản phẩmpm run wtach
+                    quantity: 1, // số lượng mặc định 1
+                    name : this.product.name,
+                    img  : this.product.img,
+                    price: this.product.price,
+                }
+                this.$store.dispatch('cart/addToCart', cart).then(res => {
                     window.izitoast.success({
                         title : "Success",
                         message : res.data.message
                     });
-                })
-                .catch(err =>{
+                }).catch(err => {
                     window.izitoast.error({
                         title: 'Error',
                         message: 'Có gì đó lỗi !',
                     });
                 })
             }else{
-                const cart = {
+
+                let data = {
                     id: id,
                     quantity: 1,
                     name : this.product.name,
                     img  : this.product.img,
                     price: this.product.price,
                 }
-                let index = -1
-                this.cart = window.sessionStorage.getItem('cart') ? Object.values(JSON.parse(window.sessionStorage.getItem('cart'))) : this.cart
-                for (let i=0; i<this.cart.length; i++) {
-                    if (this.cart[i].id === id ) {
-                        index = i
-                        break
-                    }
-                }
-                if (index === -1) {
-                    this.cart.push(cart)
-                } else {
-                    this.cart[index].quantity += 1
-                }
-                this.$eventBus.$emit('addToCart', this.cart)
-                window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                this.add_to_cart(data)
+                window.izitoast.success({
+                    title : "Success",
+                    message : 'Thêm sản phẩm thành công'
+                });
             }
         },
-        login(){
-            setTimeout(()=>{
-                this.token = window.localStorage.getItem('access_token') ?? null
-            }, 1000)
-        },
-        logout(){
-            this.token = null
-        }
     },
 }
 </script>

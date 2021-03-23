@@ -33,74 +33,60 @@
 
 </template>
 <script>
+import { mapMutations } from 'vuex'
 export default {
-    data () {
-        return {
-            cart : [],
-        }
-    },
     created () {
-        this.fetchCart()
+        // this.fetchCart()
         this.$eventBus.$on('logout', this.reset)
         this.$eventBus.$on('login', this.refresh)
-        this.$eventBus.$on('resetCart', this.reset)
+        // this.$eventBus.$on('resetCart', this.reset)
     },
     computed: {
         total() {
             let total = 0
-            if (this.cart && this.cart.length > 0) {
-                this.cart.forEach(item => {
+            if (this.$store.state.cart.cart && this.$store.state.cart.cart.length > 0) {
+                this.$store.state.cart.cart.forEach(item => {
                     total = total + item.quantity * item.price
                 })
             }
             return total + 'VND'
+        },
+        cart() {
+            return this.$store.state.cart.cart
         }
     },
     methods : {
-        fetchCart() {
-            this.cart = window.sessionStorage.getItem('cart') ? Object.values(JSON.parse(window.sessionStorage.getItem('cart'))) : this.cart
-        },
+
+        ...mapMutations([
+            'cart/REMOVE_FROM_CARD',
+            'cart/RESET_CART',
+            'cart/MINUS',
+            'cart/PLUS',
+        ]),
+        ...mapMutations({
+            removeFromCart: 'cart/REMOVE_FROM_CARD', // map `this.add()` to `this.$store.commit('increment')`
+            resetCart: 'cart/RESET_CART',
+            MINUS : 'cart/MINUS',
+            PLUS : 'cart/PLUS',
+        }),
 
         deleteProduct(id) {
-            // let index = -1
-            // for(let i = 0; i < this.cart.length; i++){
-            //     if (this.cart[i].id === id) {
-            //         index = i
-            //         break
-            //     }
-            // }
-            // this.cart.splice(index, 1)
-            let token = window.localStorage.getItem('access_token') ?? null
-                if(token){
-                this.$http.get(`/api/cart/delete-product/${id}`)
-                .then(res => {
-                    this.cart = this.cart.filter(item => { // hàm filter để lọc các sản phẩm không có id = id bị xóa - tức là chỉ lấy các sản phẩm không bị xóa
-                        return item.id !== id
-                    })
-                    this.$eventBus.$emit('addToCart', this.cart)
-                    window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+
+            if(this.$store.state.user.access_token) {
+                this.$store.dispatch('cart/removeFromCart', id).then(res => {
                     window.izitoast.success({
                         title : "Success",
                         message : res.data.message
                     });
-                })
-                .catch(err => {
+                }).catch(err => {
                     window.izitoast.error({
                         title: 'Error',
-                        message: 'Có gì đó lỗi !!',
+                        message: 'Có gì đó lỗi !',
                     });
                 })
             }else{
-                this.cart = this.cart.filter(item => {
-                    return item.id !== id
-                })
-                this.$eventBus.$emit('addToCart', this.cart)
-                window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
-                window.izitoast.success({
-                    title : "Success",
-                    message : 'Xóa sản phẩm thành công !'
-                });
-        }
+                this.removeFromCart(id);
+            }
         },
         order() {
             if(window.localStorage.getItem('access_token') != null){
@@ -110,94 +96,52 @@ export default {
             }
         },
         reset() {
-            this.cart = []
-            window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
-            //this.$eventBus.$emit('resetCart')
-        },
-        refresh(){
-            setTimeout(this.fetchCart, 2000);
+            this.resetCart()
         },
         plus(id){
             let vm  = id
             let quantity = parseInt($('#'+ id).val()) + 1
             let token = window.localStorage.getItem('access_token') ?? null
             if(token != null){
-                this.$http.get(`/api/cart/plus/${id}/${quantity}`)
-                .then(res => {
+                this.$store.dispatch('cart/plus', {id: vm, quantity}).then(res => {
                     $('#'+ vm).val(quantity)
-                    let index = -1
-                    for(let i= 0; i< this.cart.length; i++){
-                        if(this.cart[i].id == vm){
-                            index = i
-                            break;
-                        }
-                    }
-                    if(index != -1){
-                        this.cart[index].quantity +=1
-                    }
-                    window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                }).catch(err => {
+                    window.izitoast.error({
+                        title: 'Error',
+                        message: 'Có gì đó lỗi !',
+                    })
+                    console.log(err)
                 })
-                .catch(err => console.log(err))
             }else{
-                $('#'+ vm).val(quantity)
-                let index = -1
-                for(let i= 0; i< this.cart.length; i++){
-                    if(this.cart[i].id == vm){
-                        index = i
-                        break;
-                    }
-                }
-                if(index !== -1){
-                    this.cart[index].quantity +=1
-                }
-                window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+               this.PLUS(vm)
             }
         },
         minus(id){
-            //alert(1)
+
             let vm  = id
             let quantity = parseInt($('#'+ id).val())
             if(quantity == 1){
                 alert('Số lượng không hợp lệ !!')
                 return 0
             }
-            //alert(2)
+
             quantity = quantity - 1
-            let token = window.localStorage.getItem('access_token') ?? null
+            let token = this.$store.state.user.access_token ?? null
+
             if(token){
-               // alert(3)
-                this.$http.get(`/api/cart/minus/${id}/${quantity}`)
-                .then(res => {
+
+                this.$store.dispatch('cart/minus', {id: vm, quantity}).then(res => {
                     $('#'+ vm).val(quantity)
-                    let index = -1
-                    for(let i= 0; i< this.cart.length; i++){
-                        if(this.cart[i].id == vm){
-                            index = i
-                            break;
-                        }
-                    }
-                    if(index != -1){
-                        this.cart[index].quantity -= 1
-                    }
-                    window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+                }).catch(err => {
+                    window.izitoast.error({
+                        title: 'Error',
+                        message: 'Có gì đó lỗi !',
+                    })
+                    console.log(err)
                 })
-                .catch(err => console.log(err))
+
             }else{
-                //alert(4)
-                $('#'+ vm).val(quantity)
-                let index = -1
-                for(let i= 0; i< this.cart.length; i++){
-                    if(this.cart[i].id == vm){
-                        index = i
-                        break;
-                    }
-                }
-                alert(index)
-                if(index != -1){
-                    this.cart[index].quantity -= 1
-                }
-                window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
-                //alert(5)
+               this.MINUS(vm)
             }
         }
     },

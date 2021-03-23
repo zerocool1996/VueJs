@@ -107,14 +107,6 @@ export default {
                         title : "Success",
                         message : res.data.message
                     })
-                    this.user = {
-                        email       : res.data.user.email,
-                        first_name  : res.data.user.first_name,
-                        last_name   : res.data.user.last_name,
-                        address     : res.data.user.last_name,
-                        tel         : res.data.user.tel,
-                        gender_id   : res.data.user.gender_id,
-                    }
                     this.errors = null
                 } else {
                     window.izitoast.success({

@@ -70,6 +70,16 @@ export default {
             //code mới, kết hợp vuex
             this.$store.dispatch('user/loginByEmail', this.user).then(res => {
                 document.getElementById('btn-close-form-login').click()
+                this.$store.dispatch('cart/init').then(res => {
+
+                }).catch(err => {
+                    window.izitoast.error({
+                        title: 'Error',
+                        message: 'Đồng bộ giỏ hàng lỗi !',
+                    })
+                    console.log(err)
+                })
+                // this.$eventBus.$emit('loginSuccess', {})
             }).catch(err => {
                 console.log(err)
                 if (err.response.status === 422) {

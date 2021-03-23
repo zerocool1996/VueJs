@@ -51,7 +51,8 @@
             </div>
         </div>
     </nav>
-    <ModalLogin @loginSuccess="loginSuccess" />
+<!--    <ModalLogin @loginSuccess="loginSuccess" />-->
+    <ModalLogin/>
 </div>
 </template>
 <script>
@@ -62,14 +63,14 @@ export default {
         return {
             authors : [],
             categories : [],
-            cart: [],
             keyword : null
 
         }
     },
     computed: {
         quantityProduct() {
-            return this.cart.length
+            // return this.$store.state.cart.cart.length ?? 0 khi log out cart bị null sẽ gây lỗi con chưa login ko co cart nên ko lỗi
+            return this.$store.state.cart.cart ? this.$store.state.cart.cart.length : 0
         },
         user() {
             return this.$store.state.user.user ?? null
@@ -81,9 +82,9 @@ export default {
     created () {
         this.fetchCategories()
         this.fetchAuthors()
-        this.initCart()
-        this.$eventBus.$on('addToCart', this.addToCart) // lắng nghe event bus
-        this.$eventBus.$on('resetCart', this.resetCart)
+        // this.initCart()
+        // this.$eventBus.$on('addToCart', this.addToCart) // lắng nghe event bus
+        // this.$eventBus.$on('resetCart', this.resetCart)
         // this.$eventBus.$on('userUpdated', this.getUser) user đã chuyển sang get từ vuex nên ko cần nữa
     },
 
@@ -103,45 +104,46 @@ export default {
             })
             .catch(err => console.log(err))
         },
-        loginSuccess(data) {
-            this.token = data
-
-            this.$http.post('/api/cart/init', {cart : this.cart})
-            .then(res => {
-                this.cart = []
-                let user_cart = res.data.cart
-                for(let i=0; i< user_cart.length; i++){
-                    let cart = {
-                        id: user_cart[i].product.id,
-                        quantity: user_cart[i].quantity,
-                        name : user_cart[i].product.name,
-                        img  : user_cart[i].product.image,
-                        price: user_cart[i].product.price,
-                    }
-                    this.cart.push(cart)
-                }
-                window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
-            })
-            .catch(err => console.log(err))
-            this.$eventBus.$emit('login')
-
-        },
+        // ko cần khi chuyển lưu cart bằng vuex
+        // loginSuccess(data) {
+        //     this.token = data
+        //
+        //     this.$http.post('/api/cart/init', {cart : this.cart})
+        //     .then(res => {
+        //         this.cart = []
+        //         let user_cart = res.data.cart
+        //         for(let i=0; i< user_cart.length; i++){
+        //             let cart = {
+        //                 id: user_cart[i].product.id,
+        //                 quantity: user_cart[i].quantity,
+        //                 name : user_cart[i].product.name,
+        //                 img  : user_cart[i].product.image,
+        //                 price: user_cart[i].product.price,
+        //             }
+        //             this.cart.push(cart)
+        //         }
+        //         window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+        //     })
+        //     .catch(err => console.log(err))
+        //     this.$eventBus.$emit('login')
+        //
+        // },
         logout() {
             this.$store.dispatch('user/logout')
-            window.sessionStorage.removeItem('cart')
-            this.cart = []
-            this.$eventBus.$emit('logout')
+            this.$store.dispatch('cart/resetCart')
+            this.$eventBus.$emit('logout', {})
+
         },
-        initCart() {
-            this.cart = window.sessionStorage.getItem('cart') ? Object.values(JSON.parse(window.sessionStorage.getItem('cart'))) : this.cart
-        },
-        addToCart(data) {
-            this.cart = data
-        },
-        resetCart(){
-            this.cart = []
-            window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
-        },
+        // initCart() {
+        //     this.cart = window.sessionStorage.getItem('cart') ? Object.values(JSON.parse(window.sessionStorage.getItem('cart'))) : this.cart
+        // },
+        // addToCart(data) {
+        //     this.cart = data
+        // },
+        // resetCart(){
+        //     this.cart = []
+        //     window.sessionStorage.setItem('cart', JSON.stringify(this.cart))
+        // },
         authorDetail(id) {
             this.$router.push({name: 'author.detail', params: { id : id}})
             this.$eventBus.$emit('authorDetail')
